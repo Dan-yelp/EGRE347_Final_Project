@@ -31,6 +31,8 @@
 #             https://docs.python.org/3/library/functions.html - string to hex, and ord syntax (very useful!!!)
 #             http://aprs.gids.nl/nmea/ - NMEA protocol standard
 #******************************************************************
+GPGGA_LENGTH = 69 #update this value
+
 class GPS:
     #Data members for state machine
     State = "Reading"#Initial state, looking for $
@@ -104,7 +106,7 @@ class GPS:
                 else:
                     self.State = "Reading"
         #State 4 - Output message to terminal
-        if(self.State == "Writing"):
+        if self.State == "Writing" and self.Type_string == 'GPGGA': #and len(self.Data_string) == GPGGA_LENGTH:
             print('Message type:',self.Type_string)
             print('Message data:',self.Data_string)
             print('Message checksum:',self.Check_string,'\n')

@@ -19,9 +19,11 @@
 
 import sys
 import GPS_class
+#import RPi.GPIO as GPIO #Adds support of using GPIO pins
 import enum #Used to track state in state machine
 # Open the terminal for reading
 message = GPS_class.GPS()
+#GPIO.setmode(GPIO.BCM)
 
 count = 0
 if len(sys.argv) < 2:
