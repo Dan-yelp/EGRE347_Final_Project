@@ -85,7 +85,7 @@ bool GPS::GPS_message(char c)
 		// ss << float << Data_string.substr(16,26)//from string to float?
 		// ss >> y;
 		// cout<<endl<<"y:"<<y<<endl;
-		if(Data_string.length() == 69){
+		if(Data_string.length() == GPGGA_LENGTH){
 			cout<<endl<<"Longitude: "<<Data_string.substr(16,2)<<" degrees, "<<Data_string.substr(18,8)<<" minutes"<<endl;	
 			cout<<"Latitude: "<<Data_string.substr(29,3)<<" degrees, "<<Data_string.substr(32,8)<<" minutes"<<endl;
 			cout<<"Time: "<<Data_string.substr(6,9)<<endl;

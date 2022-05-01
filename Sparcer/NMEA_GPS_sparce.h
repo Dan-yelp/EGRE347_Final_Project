@@ -25,6 +25,9 @@
 //unsigned char - one byte of buffer data in ascii format, check sumtracker
 using namespace std;
 enum GPS_state{Reading,Found_Init, Found_Type, Found_Data, Writing};
+
+const int GPGGA_LENGTH = 69;
+
 class GPS
 {
 	private:

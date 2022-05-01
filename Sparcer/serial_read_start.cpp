@@ -29,6 +29,9 @@ using namespace std;
 #include <csignal>
 #include "NMEA_GPS_sparce.h"
 
+//pin number for IR sensor
+const int IR_PIN = 17;
+
 // global flag used to exit from the main loop
 bool RUNNING = true;
 
@@ -41,10 +44,15 @@ void my_handler(int s)
 
 int main(int argc, char *argv[])
 {
+	// Initialize wiringPi and allow the use of BCM pin numbering
+	wiringPiSetupGpio();
     signal(SIGINT, my_handler);//To handle a Ctrl+c
+
 	unsigned char read_buff;
 
     GPS * gps = new GPS();
+
+	pinMode(IR_PIN, INPUT);
 
 	bool quit_flag = false;
 
@@ -61,11 +69,15 @@ int main(int argc, char *argv[])
 	}
 	else
 		cout << "port successfully opened" << endl;
+	
 	while(RUNNING)
 	{
+		//Enters if statement if IR sensor is outputting high
+		if(digitalRead(17)){
 			// printf("Read byte:%x\n", read_buff);
 			if(read(sp, &read_buff, sizeof(read_buff)))
 				new_message->GPS_message(read_buff);
+		}
 	}
 
 	delete new_message;
