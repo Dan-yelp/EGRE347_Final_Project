@@ -23,23 +23,19 @@ class Sensor:
 
         self.motion = False
 
-        if(!GPIO.input(self.gpio_input)):
-            # print('Event not detected\n')
-            GPIO.output(self.red,GPIO.LOW)
-            self.motion = False
-            #sleep(1)
-
-            #sleep(6)#Accounts for delay of sensor trigger
-        else:#If the GPIO-7 from sensor is high, motion is detected
+        if(GPIO.input(self.gpio_input)):#If the GPIO-7 from sensor is high, motion is detected
             # print('Motion detected\n')
             self.motion = True
             GPIO.output(self.red,GPIO.HIGH)
 
-            #sleep(6)#Accounts for delay of sensor trigger        
+            #sleep(6)#Accounts for delay of sensor trigger
+        else:
+            # print('Event not detected\n')
+            GPIO.output(self.red,GPIO.LOW)
+            self.motion = False
+            #sleep(1)
+        
         return self.motion #Indication of motion sensor state
 
     def sensor_shutdown():
-        GPIO.output(self.red,GPIO.LOW)
-        GPIO.output(self.red,GPIO.LOW)
-        GPIO.output(self.red,GPIO.LOW)
         GPIO.cleanup()
