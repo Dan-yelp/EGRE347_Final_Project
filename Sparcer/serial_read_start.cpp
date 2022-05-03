@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 			//save
 			ofstream outFile ( outfileName,std::ios::binary );
 
-			GPS_output << "File name: " << outfileName << "\tCoords: " << new_message->get_Coord() << endl;
+			GPS_output << "File name: " << outfileName << "\tCoords: " << last_coord << endl;
 		}
 
 			usleep(CAMERA_DELAY);
