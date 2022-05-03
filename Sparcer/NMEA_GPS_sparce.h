@@ -49,7 +49,8 @@ class GPS
 		GPS();				// Constructor
 		
 		~GPS();					// Destructor
-	
+
+		string get_Coord();
 	
 		bool GPS_message(char c);			// Main implementation for the state machine
 };

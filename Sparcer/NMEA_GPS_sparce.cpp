@@ -103,3 +103,7 @@ bool GPS::GPS_message(char c)
 	
 	return false;		
 }
+
+string GPS::get_Coord(){
+	return string("Longitude: ") + Data_string.substr(16,2) + " degrees, " + Data_string.substr(18,8) + " minutes " + "Latitude: " + Data_string.substr(29,3) + " degrees, " + Data_string.substr(32,8) + " minutes";
+}

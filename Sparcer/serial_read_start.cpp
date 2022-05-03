@@ -52,10 +52,17 @@ int main(int argc, char *argv[])
 	wiringPiSetupGpio();
     signal(SIGINT, my_handler);//To handle a Ctrl+c
 
+	ofstream GPS_output;
 	struct tm *t;
 	time_t buff;
 	string outfileName;
 	unsigned char read_buff;
+
+	GPS_output.open("coordinates.txt", std::ios_base::app);
+	if(!GPS_output.is_open()){
+		perror("Couldn't open outfile\n");
+		exit(-1);
+	}
 
 	//following code copied for settin up picamera: https://github.com/cedricve/raspicam
 	raspicam::RaspiCam Camera; //Camera object
@@ -104,6 +111,8 @@ int main(int argc, char *argv[])
 				Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );//get camera image
 				//save
 				ofstream outFile ( outfileName,std::ios::binary );
+
+				GPS_output << "File name: " << outfileName << "\tCoords: " << new_message->get_Coord();
 			}
 			usleep(CAMERA_DELAY);
 		}
