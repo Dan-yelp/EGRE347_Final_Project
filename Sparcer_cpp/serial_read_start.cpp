@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     signal(SIGINT, my_handler);//To handle a Ctrl+c
 		// global flag used to exit from the main loop
 
+	pinInit();
 	ofstream GPS_output, picture;
 	struct tm *t;
 	time_t buff;
@@ -59,14 +60,13 @@ int main(int argc, char *argv[])
 	GPS *new_message;
 	int sp;
 
-	// Initialize wiringPi and allow the use of BCM pin numbering
-	wiringPiSetupGpio();
-
 	GPS_output.open(CSVFILE, std::ios_base::app);
 	if(!GPS_output.is_open()){
 		perror("Couldn't open outfile\n");
 		exit(-1);
 	}
+
+	digitalWrite(green, HIGH);
 
 	//following code copied for settin up picamera: https://github.com/cedricve/raspicam
 	raspicam::RaspiCam Camera; //Camera object
@@ -76,8 +76,6 @@ int main(int argc, char *argv[])
 	//wait a while until camera stabilizes
 	cout<<"Sleeping for 3 secs"<<endl;
 	sleep(3);
-
-	pinMode(IR_PIN, INPUT);
 
 	bool quit_flag = false;
 
@@ -98,7 +96,7 @@ int main(int argc, char *argv[])
 	while(RUNNING)
 	{		
 		//Enters if statement if IR sensor is outputting high
-		if(RUNNING){
+		if(senseMotion()){
 			bool loop = true;
 			int i = read(sp, &read_buff, sizeof(read_buff));
 			while(loop && RUNNING){
@@ -129,6 +127,8 @@ int main(int argc, char *argv[])
 		}
 
 	}
+
+	clearLED();
 	delete new_message;
 
 	close(sp);
