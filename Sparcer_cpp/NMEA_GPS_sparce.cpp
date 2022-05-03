@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // File : NMEA_GPS_sparce.cpp
 //
-// Programmer: Daniel J. Youngk
+// Programmer: Daniel J. Youngk, Mehmet Kutlug
 //
 // Creation Date:4/11/22
 //

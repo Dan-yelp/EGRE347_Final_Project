@@ -1,11 +1,11 @@
 //******************************************************************
 // Program #: Reading from serial port
 //
-// Programmer: Matthew Gelber/Robert Klenke
+// Programmer: Mehmet Kutlug/Dan Youngk
 //
 // Due Date: NA
 //
-// EGRE 347, Fall 2020       Instructor: Robert Klenke
+// EGRE 347, Spring 2022       Instructor: Robert Klenke
 //
 // Pledge: I have neither given nor received unauthorized aid on this program.
 //
@@ -66,8 +66,6 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	digitalWrite(green, HIGH);
-
 	//following code copied for settin up picamera: https://github.com/cedricve/raspicam
 	raspicam::RaspiCam Camera; //Camera object
 	//Open camera 
@@ -95,10 +93,12 @@ int main(int argc, char *argv[])
 
 	while(RUNNING)
 	{		
+		digitalWrite(green, HIGH);
 		//Enters if statement if IR sensor is outputting high
 		if(senseMotion()){
 			bool loop = true;
 			int i = read(sp, &read_buff, sizeof(read_buff));
+			//gets a valid GPS message before taking picture
 			while(loop && RUNNING){
 				if(i > 0){
 					if(new_message->GPS_message(read_buff))
