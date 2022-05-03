@@ -37,7 +37,7 @@ const int IR_PIN = 17;
 const int CAMERA_DELAY = 500000;
 //name of txt file that .ppm filenames and coordinates are saved to
 //NOTE: program appends to file doesn't replace it
-const string TXTFILE = "coordinates.txt";
+const string CSVFILE = "coordinates.csv";
 
 // global flag used to exit from the main loop
 bool RUNNING = true;
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	string outfileName, last_coord;
 	unsigned char read_buff;
 
-	GPS_output.open(TXTFILE, std::ios_base::app);
+	GPS_output.open(CSVFILE, std::ios_base::app);
 	if(!GPS_output.is_open()){
 		perror("Couldn't open outfile\n");
 		exit(-1);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 			//save
 			ofstream outFile ( outfileName,std::ios::binary );
 
-			GPS_output << "File name: " << outfileName << "\tCoords: " << last_coord << endl;
+			GPS_output << "File name," << outfileName << ",Coords," << last_coord << endl;
 		}
 
 			usleep(CAMERA_DELAY);
