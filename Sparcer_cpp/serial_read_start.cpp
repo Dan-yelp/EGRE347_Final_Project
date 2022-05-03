@@ -30,11 +30,7 @@ using namespace std;
 #include <raspicam/raspicam.h>
 #include <time.h>
 #include "NMEA_GPS_sparce.h"
-
-//pin number for IR sensor
-const int IR_PIN = 4;
-//delay between each photo taken in seconds
-const int CAMERA_DELAY = 1;
+#include "funcs.h"
 
 //name of txt file that .ppm filenames and coordinates are saved to
 //NOTE: program appends to file doesn't replace it
@@ -55,7 +51,7 @@ int main(int argc, char *argv[])
     signal(SIGINT, my_handler);//To handle a Ctrl+c
 		// global flag used to exit from the main loop
 
-	ofstream GPS_output;
+	ofstream GPS_output, picture;
 	struct tm *t;
 	time_t buff;
 	string outfileName, last_coord;
@@ -113,20 +109,19 @@ int main(int argc, char *argv[])
 				i = read(sp, &read_buff, sizeof(read_buff));
 			}
 			last_coord = new_message->get_Coord();
-			cout <<last_coord;
 			time(&buff);
 			t = localtime(&buff);		
-			outfileName = string("capture_") + to_string(t->tm_mon) + to_string(t->tm_mday) + to_string(t->tm_hour) + to_string(t->tm_min) + to_string(t->tm_sec) + ".ppm";		
-			//capture
-			Camera.grab();
+			outfileName = string("capture_") + to_string(t->tm_mon) + to_string(t->tm_mday) + to_string(t->tm_hour) + to_string(t->tm_min) + to_string(t->tm_sec) + ".ppm";	
 			//allocate memory
 			unsigned char *data=new unsigned char[  Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB )];
+			//capture
+			Camera.grab();
 			//extract the image in rgb format
-			Camera.retrieve ( data);//get camera image
+			Camera.retrieve (data);//get camera image
 			//save
-			ofstream outFile ( outfileName,std::ios::binary );
-			outFile<<"P6\n"<<Camera.getWidth() <<" "<<Camera.getHeight() <<" 255\n";
-			outFile.write ( ( char* ) data, Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB ) );
+			ofstream outfile ( outfileName,std::ios::binary );
+			outfile<<"P6\n"<<Camera.getWidth() <<" "<<Camera.getHeight() <<" 255\n";
+			outfile.write ( ( char* ) data, Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB ) );
 			cout<<"Image saved at "<<outfileName<<endl;
 
 			GPS_output << "File name," << outfileName << ",Coords," << last_coord << endl;
