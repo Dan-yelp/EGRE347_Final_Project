@@ -33,8 +33,8 @@ using namespace std;
 
 //pin number for IR sensor
 const int IR_PIN = 17;
-//delay between each photo taken in microseconds
-const int CAMERA_DELAY = 500000;
+//delay between each photo taken in seconds
+const int CAMERA_DELAY = 1;
 //name of txt file that .ppm filenames and coordinates are saved to
 //NOTE: program appends to file doesn't replace it
 const string CSVFILE = "coordinates.csv";
@@ -106,20 +106,23 @@ int main(int argc, char *argv[])
 		if(digitalRead(17)){
 			time(&buff);
 			t = localtime(&buff);		
-			outfileName = string("capture_") + asctime(t) + ".ppm";		
+			outfileName = string("capture_") + to_string(t->tm_mon) + to_string(t->tm_mday) + to_string(t->tm_hour) + to_string(t->tm_min) + to_string(t->tm_sec) + ".ppm";		
 			//capture
 			Camera.grab();
 			//allocate memory
 			unsigned char *data=new unsigned char[  Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB )];
 			//extract the image in rgb format
-			Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );//get camera image
+			Camera.retrieve ( data);//get camera image
 			//save
 			ofstream outFile ( outfileName,std::ios::binary );
+			outFile<<"P6\n"<<Camera.getWidth() <<" "<<Camera.getHeight() <<" 255\n";
+			outFile.write ( ( char* ) data, Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB ) );
+			cout<<"Image saved at "<<outfileName<<endl;
 
 			GPS_output << "File name," << outfileName << ",Coords," << last_coord << endl;
 		}
 
-			usleep(CAMERA_DELAY);
+			sleep(CAMERA_DELAY);
 	}
 
 	delete new_message;

@@ -12,4 +12,4 @@ NMEA_GPS_sparce.o : NMEA_GPS_sparce.cpp
 	$(CXX) -c $(FLAGS) NMEA_GPS_sparce.cpp
 
 clean:
-	rm *.o sparce*
+	rm *.o sparce* *.ppm *.csv
