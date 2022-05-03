@@ -35,6 +35,7 @@ bool GPS::GPS_message(char c)
 		Data_string.clear();
 		Check_string.clear();
 		Type_string.clear();
+		time(start);
 
 		Check_int = 0;
 	}
@@ -80,6 +81,7 @@ bool GPS::GPS_message(char c)
 
 	else if(State == Writing)
 	{
+		time(finish);
 		// stringstream ss;
 		// float y;
 		// ss << float << Data_string.substr(16,26)//from string to float?
@@ -89,6 +91,7 @@ bool GPS::GPS_message(char c)
 			cout<<endl<<"Longitude: "<<Data_string.substr(16,2)<<" degrees, "<<Data_string.substr(18,8)<<" minutes"<<endl;	
 			cout<<"Latitude: "<<Data_string.substr(29,3)<<" degrees, "<<Data_string.substr(32,8)<<" minutes"<<endl;
 			cout<<"Time: "<<Data_string.substr(6,9)<<endl;
+			cout<<"Execution Time: "<<*finish - *start<<endl;
 		}
 		// cout<<"Longitude:"<<Data_string.substr(6,9)<<endl;
 		// cout<<"Message type:"<<Type_string<<endl;

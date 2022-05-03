@@ -27,10 +27,13 @@ using namespace std;
 #include <fcntl.h>
 #include <wiringPi.h>
 #include <csignal>
+#include "opencv2/opencv.hpp"
 #include "NMEA_GPS_sparce.h"
 
 //pin number for IR sensor
 const int IR_PIN = 17;
+//delay between each photo taken in microseconds
+const int CAMERA_DELAY = 500000;
 
 // global flag used to exit from the main loop
 bool RUNNING = true;
@@ -77,6 +80,7 @@ int main(int argc, char *argv[])
 			// printf("Read byte:%x\n", read_buff);
 			if(read(sp, &read_buff, sizeof(read_buff)))
 				new_message->GPS_message(read_buff);
+			usleep(CAMERA_DELAY);
 		}
 	}
 
