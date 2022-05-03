@@ -17,9 +17,10 @@ motion_sensor.sensor_init()
 
 while(1):
     motion = motion_sensor.sense_motion()
-    if(motion)
-        print('Motion\n'):
-    else
-        print('No motion\n'):
+    if(motion):
+        print('Motion\n')
+    else:
+        print('No motion\n')
+        
 motion_sensor.sensor_shutdown()
 

@@ -21,5 +21,6 @@ while(1):
         print('Motion\n')
     else:
         print('No motion\n')
+        
 motion_sensor.sensor_shutdown()
 
