@@ -120,7 +120,6 @@ int main(int argc, char *argv[])
 		}
 
 			usleep(CAMERA_DELAY);
-		}
 	}
 
 	delete new_message;
