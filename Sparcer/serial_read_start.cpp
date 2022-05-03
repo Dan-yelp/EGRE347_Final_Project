@@ -35,6 +35,7 @@ using namespace std;
 const int IR_PIN = 17;
 //delay between each photo taken in microseconds
 const int CAMERA_DELAY = 500000;
+const string TXTFILE = "coordinates.txt";
 
 // global flag used to exit from the main loop
 bool RUNNING = true;
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
 	string outfileName;
 	unsigned char read_buff;
 
-	GPS_output.open("coordinates.txt", std::ios_base::app);
+	GPS_output.open(TXTFILE, std::ios_base::app);
 	if(!GPS_output.is_open()){
 		perror("Couldn't open outfile\n");
 		exit(-1);
