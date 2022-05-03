@@ -35,6 +35,8 @@ using namespace std;
 const int IR_PIN = 17;
 //delay between each photo taken in microseconds
 const int CAMERA_DELAY = 500000;
+//name of txt file that .ppm filenames and coordinates are saved to
+//NOTE: program appends to file doesn't replace it
 const string TXTFILE = "coordinates.txt";
 
 // global flag used to exit from the main loop
@@ -56,7 +58,7 @@ int main(int argc, char *argv[])
 	ofstream GPS_output;
 	struct tm *t;
 	time_t buff;
-	string outfileName;
+	string outfileName, last_coord;
 	unsigned char read_buff;
 
 	GPS_output.open(TXTFILE, std::ios_base::app);
@@ -101,6 +103,7 @@ int main(int argc, char *argv[])
 			// printf("Read byte:%x\n", read_buff);
 			if(read(sp, &read_buff, sizeof(read_buff))){
 				new_message->GPS_message(read_buff);
+				last_coord = new_message->get_Coord();
 				time(&buff);
 				t = localtime(&buff);		
 				outfileName = string("capture_") + asctime(t) + ".ppm";		
@@ -115,6 +118,19 @@ int main(int argc, char *argv[])
 
 				GPS_output << "File name: " << outfileName << "\tCoords: " << new_message->get_Coord() << endl;
 			}
+			time(&buff);
+			t = localtime(&buff);		
+			outfileName = string("capture_") + asctime(t) + ".ppm";		
+			//capture
+			Camera.grab();
+			//allocate memory
+			unsigned char *data=new unsigned char[  Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB )];
+			//extract the image in rgb format
+			Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );//get camera image
+			//save
+			ofstream outFile ( outfileName,std::ios::binary );
+			GPS_output << "File name: " << outfileName << "\tCoords: " << last_coord << endl;
+
 			usleep(CAMERA_DELAY);
 		}
 	}
