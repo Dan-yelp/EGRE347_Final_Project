@@ -98,30 +98,26 @@ int main(int argc, char *argv[])
 	
 	while(RUNNING)
 	{
-		if(read(sp, &read_buff, sizeof(read_buff))){
-			new_message->GPS_message(read_buff);
-			last_coord = new_message->get_Coord();
-		}
+		if(read(sp, &read_buff, sizeof(read_buff)))
+			if(new_message->GPS_message(read_buff))
+				last_coord = new_message->get_Coord();
+		
 		//Enters if statement if IR sensor is outputting high
 		if(digitalRead(17)){
-			// printf("Read byte:%x\n", read_buff);
-			if(read(sp, &read_buff, sizeof(read_buff))){
-				new_message->GPS_message(read_buff);
-				last_coord = new_message->get_Coord();
-				time(&buff);
-				t = localtime(&buff);		
-				outfileName = string("capture_") + asctime(t) + ".ppm";		
-				//capture
-				Camera.grab();
-				//allocate memory
-				unsigned char *data=new unsigned char[  Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB )];
-				//extract the image in rgb format
-				Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );//get camera image
-				//save
-				ofstream outFile ( outfileName,std::ios::binary );
+			time(&buff);
+			t = localtime(&buff);		
+			outfileName = string("capture_") + asctime(t) + ".ppm";		
+			//capture
+			Camera.grab();
+			//allocate memory
+			unsigned char *data=new unsigned char[  Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB )];
+			//extract the image in rgb format
+			Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );//get camera image
+			//save
+			ofstream outFile ( outfileName,std::ios::binary );
 
-				GPS_output << "File name: " << outfileName << "\tCoords: " << new_message->get_Coord() << endl;
-			}
+			GPS_output << "File name: " << outfileName << "\tCoords: " << new_message->get_Coord() << endl;
+		}
 
 			usleep(CAMERA_DELAY);
 		}
