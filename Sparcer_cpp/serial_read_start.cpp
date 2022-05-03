@@ -32,9 +32,10 @@ using namespace std;
 #include "NMEA_GPS_sparce.h"
 
 //pin number for IR sensor
-const int IR_PIN = 17;
+const int IR_PIN = 4;
 //delay between each photo taken in seconds
 const int CAMERA_DELAY = 1;
+
 //name of txt file that .ppm filenames and coordinates are saved to
 //NOTE: program appends to file doesn't replace it
 const string CSVFILE = "coordinates.csv";
@@ -51,15 +52,19 @@ void my_handler(int s)
 
 int main(int argc, char *argv[])
 {
-	// Initialize wiringPi and allow the use of BCM pin numbering
-	wiringPiSetupGpio();
     signal(SIGINT, my_handler);//To handle a Ctrl+c
+		// global flag used to exit from the main loop
 
 	ofstream GPS_output;
 	struct tm *t;
 	time_t buff;
 	string outfileName, last_coord;
 	unsigned char read_buff;
+	GPS *new_message;
+	int sp;
+
+	// Initialize wiringPi and allow the use of BCM pin numbering
+	wiringPiSetupGpio();
 
 	GPS_output.open(CSVFILE, std::ios_base::app);
 	if(!GPS_output.is_open()){
@@ -71,12 +76,10 @@ int main(int argc, char *argv[])
 	raspicam::RaspiCam Camera; //Camera object
 	//Open camera 
 	cout<<"Opening Camera..."<<endl;
-	if ( !Camera.open()) {cerr<<"Error opening camera"<<endl;return -1;}
+	if (!Camera.open()) {cerr<<"Error opening camera"<<endl;return -1;}
 	//wait a while until camera stabilizes
 	cout<<"Sleeping for 3 secs"<<endl;
 	sleep(3);
-
-    GPS * gps = new GPS();
 
 	pinMode(IR_PIN, INPUT);
 
@@ -84,10 +87,10 @@ int main(int argc, char *argv[])
 
 	ifstream infile;
 	infile.open(argv[1], fstream::in);
-	GPS * new_message = new GPS; 
+	new_message = new GPS; 
 
 	cout << argv[1] << endl;
-	int sp = open(argv[1], O_RDONLY | O_NOCTTY | O_NDELAY);	//opens the serial port inputted as argument as read only
+	sp = open(argv[1], O_RDONLY | O_NOCTTY | O_NDELAY);	//opens the serial port inputted as argument as read only
 
 	if(sp < 0){
 		cout << "unable to open port " << argv[1] << endl;
@@ -95,15 +98,22 @@ int main(int argc, char *argv[])
 	}
 	else
 		cout << "port successfully opened" << endl;
-	
+
 	while(RUNNING)
-	{
-		if(read(sp, &read_buff, sizeof(read_buff)))
-			if(new_message->GPS_message(read_buff))
-				last_coord = new_message->get_Coord();
-		
+	{		
 		//Enters if statement if IR sensor is outputting high
-		if(digitalRead(17)){
+		if(RUNNING){
+			bool loop = true;
+			int i = read(sp, &read_buff, sizeof(read_buff));
+			while(loop && RUNNING){
+				if(i > 0){
+					if(new_message->GPS_message(read_buff))
+						loop = false;
+				}
+				i = read(sp, &read_buff, sizeof(read_buff));
+			}
+			last_coord = new_message->get_Coord();
+			cout <<last_coord;
 			time(&buff);
 			t = localtime(&buff);		
 			outfileName = string("capture_") + to_string(t->tm_mon) + to_string(t->tm_mday) + to_string(t->tm_hour) + to_string(t->tm_min) + to_string(t->tm_sec) + ".ppm";		
@@ -120,11 +130,10 @@ int main(int argc, char *argv[])
 			cout<<"Image saved at "<<outfileName<<endl;
 
 			GPS_output << "File name," << outfileName << ",Coords," << last_coord << endl;
+			sleep(CAMERA_DELAY);
 		}
 
-			sleep(CAMERA_DELAY);
 	}
-
 	delete new_message;
 
 	close(sp);

@@ -1,5 +1,5 @@
 CXX = g++
-FLAGS = -lwiringPi
+FLAGS = -lwiringPi -g
 FLAGS += -I/usr/local/include -lraspicam
 
 sparce : serial_read_start.o NMEA_GPS_sparce.o

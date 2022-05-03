@@ -9,6 +9,8 @@
 // serial sattelite data of the types GPGGA, GPGSA, GPGSV, or GPRMC. A stand alone state machine
 // that operates off a buffer, one character at a time. The states are defined as enumerated types.
 
+using namespace std;
+
 #include <iostream>
 #include <string>
 #include <iostream>
@@ -17,12 +19,11 @@
 #include <time.h>
 #include "NMEA_GPS_sparce.h"
 
-using namespace std;
 
 GPS::GPS()
 {
 	Data_string = "";											
-	State = Reading;											
+	State = Reading;										
 }
 
 GPS::~GPS()			// destructor
@@ -36,7 +37,7 @@ bool GPS::GPS_message(char c)
 		Data_string.clear();
 		Check_string.clear();
 		Type_string.clear();
-		time(start);
+		time(&start);
 
 		Check_int = 0;
 	}
@@ -82,28 +83,31 @@ bool GPS::GPS_message(char c)
 
 	else if(State == Writing)
 	{
-		time(finish);
+		time(&finish);
 		// stringstream ss;
 		// float y;
 		// ss << float << Data_string.substr(16,26)//from string to float?
 		// ss >> y;
 		// cout<<endl<<"y:"<<y<<endl;
-		if(Data_string.length() == GPGGA_LENGTH){
-			cout<<endl<<"Longitude: "<<Data_string.substr(16,2)<<" degrees, "<<Data_string.substr(18,8)<<" minutes"<<endl;	
-			cout<<"Latitude: "<<Data_string.substr(29,3)<<" degrees, "<<Data_string.substr(32,8)<<" minutes"<<endl;
-			cout<<"Time: "<<Data_string.substr(6,9)<<endl;
-			cout<<"Execution Time: "<<*finish - *start<<endl;
-		}
+
+		// cout << Data_string << " " << Data_string.length() << endl;
+		if(Data_string.length() >= GPGGA_LENGTH)
+			return true;
+		// 	cout<<endl<<"Longitude: "<<Data_string.substr(2,16)<<" degrees, "<<Data_string.substr(8,18)<<" minutes"<<endl;	
+		// 	cout<<"Latitude: "<<Data_string.substr(3,29)<<" degrees, "<<Data_string.substr(8,32)<<" minutes"<<endl;
+		// 	cout<<"Time: "<<Data_string.substr(6,9)<<endl;
+		// 	cout<<"Execution Time: "<<finish - start<<endl;
+		//}
 		// cout<<"Longitude:"<<Data_string.substr(6,9)<<endl;
 		// cout<<"Message type:"<<Type_string<<endl;
 		// cout<<"Message data:"<<Data_string<<endl;
 		// cout<<"Message checksum:"<<Check_string<<endl;
-		return true;
+		
 	}
 	
 	return false;		
 }
 
 string GPS::get_Coord(){
-	return string("Longitude,") + Data_string.substr(16,2) + ",degrees," + Data_string.substr(18,8) + ",minutes," + "Latitude," + Data_string.substr(29,3) + ",degrees," + Data_string.substr(32,8) + ",minutes";
+	return Data_string;
 }

@@ -42,8 +42,8 @@ class GPS
 		float current_long;
 		float current_lat;
         int Check_int;
-		time_t *start;
-		time_t *finish;
+		time_t start;
+		time_t finish;
 		
 	public:
 		GPS();				// Constructor
