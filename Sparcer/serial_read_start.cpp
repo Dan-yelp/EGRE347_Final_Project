@@ -27,7 +27,8 @@ using namespace std;
 #include <fcntl.h>
 #include <wiringPi.h>
 #include <csignal>
-#include "opencv2/opencv.hpp"
+#include <raspicam/raspicam.h>
+#include <time.h>
 #include "NMEA_GPS_sparce.h"
 
 //pin number for IR sensor
@@ -51,7 +52,19 @@ int main(int argc, char *argv[])
 	wiringPiSetupGpio();
     signal(SIGINT, my_handler);//To handle a Ctrl+c
 
+	struct tm *t;
+	time_t buff;
+	string outfileName;
 	unsigned char read_buff;
+
+	//following code copied for settin up picamera: https://github.com/cedricve/raspicam
+	raspicam::RaspiCam Camera; //Camera object
+	//Open camera 
+	cout<<"Opening Camera..."<<endl;
+	if ( !Camera.open()) {cerr<<"Error opening camera"<<endl;return -1;}
+	//wait a while until camera stabilizes
+	cout<<"Sleeping for 3 secs"<<endl;
+	sleep(3);
 
     GPS * gps = new GPS();
 
@@ -78,8 +91,20 @@ int main(int argc, char *argv[])
 		//Enters if statement if IR sensor is outputting high
 		if(digitalRead(17)){
 			// printf("Read byte:%x\n", read_buff);
-			if(read(sp, &read_buff, sizeof(read_buff)))
+			if(read(sp, &read_buff, sizeof(read_buff))){
 				new_message->GPS_message(read_buff);
+				time(&buff);
+				t = localtime(&buff);		
+				outfileName = string("capture_") + asctime(t) + ".ppm";		
+				//capture
+				Camera.grab();
+				//allocate memory
+				unsigned char *data=new unsigned char[  Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB )];
+				//extract the image in rgb format
+				Camera.retrieve ( data,raspicam::RASPICAM_FORMAT_RGB );//get camera image
+				//save
+				ofstream outFile ( outfileName,std::ios::binary );
+			}
 			usleep(CAMERA_DELAY);
 		}
 	}

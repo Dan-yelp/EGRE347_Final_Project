@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <time.h>
 #include "NMEA_GPS_sparce.h"
 
 using namespace std;
