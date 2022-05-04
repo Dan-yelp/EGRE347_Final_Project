@@ -33,8 +33,7 @@
 #******************************************************************
 class GPS:
 
-    # Currently hard coded for message size (69-70)
-    # GPGGA_LENGTH = 69 #update this value, and implement in "Writing" State
+    GPGGA_LENGTH = 69 #update this value
 
     #Data members for state machine
     State = "Reading"#Initial state, looking for $
@@ -111,18 +110,20 @@ class GPS:
                 else:
                     self.State = "Reading"
         #State 4 - Output message to terminal, or wrap up data tag
-        #Output formatting layer
-        if self.State == "Writing" and self.Type_string == 'GPGGA' and ((len(self.Data_string) is 69) or (len(self.Data_string) is 70)):#and len(self.Data_string) == GPGGA_LENGTH:
+        if self.State == "Writing" and self.Type_string == 'GPGGA' and (len(self.Data_string) is 69) or (len(self.Data_string) is 70)): #and len(self.Data_string) == GPGGA_LENGTH:
+            # print('Message type:',self.Type_string)
             print('GPGGA message data:',self.Data_string)
-            self.tag_data = ','+ self.Data_string[6:16] + self.Data_string[16:25] + self.Data_string[28:41]
-            print('Tagged data:', self.tag_data)
+            # print('Message checksum:',self.Check_string,'\n')
+            self.tag_data = self.Data_string[6:16] + self.Data_string[16:25] + self.Data_string[28:41]
+            print('Tag data:', self.tag_data)
+            print('String length:',len(self.Data_string))
             return True
-        # elif self.State is "Writing":
-            # print('String length:',len(self.Data_string))
+        elif self.State is "Writing":
+            print('String length:',len(self.Data_string))
             # print('Message type:',self.Type_string)
             # print('Message data:',self.Data_string)
             # print('Message checksum:',self.Check_string,'\n')
             
-        return False#Need more data
+        return False
 
 

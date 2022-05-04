@@ -3,7 +3,7 @@
 #
 # Programmer: Daniel Jordan Youngk, Mehmet Kutlug
 #
-# Due Date: 5/3 (LATE)
+# Due Date: NA
 #
 # EGRE 347, Spring 2022       Instructor: Robert Klenke
 #
@@ -98,15 +98,12 @@ print("port with G-mouse successfully opened")
 
 #keeps track of how many images get saved
 count = 0 
-#keeps track of polling events
-poll = 0
+
 #Sparce GPS messages, poll the motion sensor as often as possible given physical 
 #constraints, and process tagged instances 
 while True:
     motion = motion_sensor.sense_motion()
-    #Keeping track of the number of GPS coordinate poles
-    poll = poll + 1
-    print("Active motion: ", motion,"\n")
+    print("Value of motion:", motion,"\n")
     #If motion is sensed, tag next available location
     if(motion):
         #Reading data one byte at a time from terminal with (G-mouse)

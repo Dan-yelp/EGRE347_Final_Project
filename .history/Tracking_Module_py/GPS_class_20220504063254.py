@@ -123,6 +123,6 @@ class GPS:
             # print('Message data:',self.Data_string)
             # print('Message checksum:',self.Check_string,'\n')
             
-        return False#Need more data
+        return False
 
 

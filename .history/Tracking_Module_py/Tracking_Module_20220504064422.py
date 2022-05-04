@@ -3,7 +3,7 @@
 #
 # Programmer: Daniel Jordan Youngk, Mehmet Kutlug
 #
-# Due Date: 5/3 (LATE)
+# Due Date: NA
 #
 # EGRE 347, Spring 2022       Instructor: Robert Klenke
 #

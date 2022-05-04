@@ -16,5 +16,4 @@ Circuit arrangement is found in "EGRE347_FinalProject_DanMehmet.pdf" [Figure 2]
 
 Usage:python3 Tracking_Module.py /dev/<G-Mouse Identifier>
 
-Output files will be named 'buffer_image[n]" and each additional immage will be logged with coordinates in location_log.
-Output will be a detailed 'buffer' csv having columns delimited by commas, and rows delimited by newline.
+Finally, the output will be a detailed csv having columns delimited by commas, and rows delimited by newline.
