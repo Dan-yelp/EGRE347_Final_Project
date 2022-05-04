@@ -1,11 +1,11 @@
 import RPi.GPIO as GPIO
 from time import sleep
+
 import sys
 
 class Sensor:
     motion = False
     red = 24
-    yellow = 5
     green = 16
     gpio_input = 4
 
@@ -14,19 +14,21 @@ class Sensor:
                 #Guard against some gpio problems related to erroneous mode changes
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.red, GPIO.OUT)
-        GPIO.setup(self.yellow, GPIO.OUT)
         GPIO.setup(self.green, GPIO.OUT)
         GPIO.setup(self.gpio_input, GPIO.IN)
+        GPIO.output(self.red,GPIO.HIGH)
 
     def sense_motion(self):
 
+        GPIO.output(self.red,GPIO.HIGH)
+        
         self.motion = False
 
         if not GPIO.input(self.gpio_input):
             # print('Event not detected\n')
             GPIO.output(self.red,GPIO.LOW)
             self.motion = False
-            #sleep(1)
+            sleep(1)
 
             #sleep(6)#Accounts for delay of sensor trigger
         else:#If the GPIO-7 from sensor is high, motion is detected
@@ -39,6 +41,5 @@ class Sensor:
 
     def sensor_shutdown():
         GPIO.output(self.red,GPIO.LOW)
-        GPIO.output(self.red,GPIO.LOW)
-        GPIO.output(self.red,GPIO.LOW)
+        GPIO.output(self.green,GPIO.LOW)
         GPIO.cleanup()

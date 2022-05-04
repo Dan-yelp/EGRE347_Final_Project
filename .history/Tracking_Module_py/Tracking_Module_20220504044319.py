@@ -66,14 +66,9 @@ if os.path.exists(output_filename):
     os.remove(output_filename)
 
 n = int(0)
-#filename[n], where n is the index of the image
-image_filename = 'buffer_image'
-
-while(os.path.exists(image_filename+'['+ str(n) + '].jpg')):
-    os.remove(image_filename+'['+ str(n) + '].jpg')
-    image_filename = image_filename + '['+ str(n) + '].jpg'
-    n = n + 1
-    print("Removing buffer image:", image_filename)
+image_filename = image + str(n)
+while(os.path.exists(image_filename)):
+    os.remove(image_filename)
 
 #Used to interface sensor
 motion_sensor = Sensor_class.Sensor()
@@ -104,7 +99,7 @@ count = 0
 #constraints, and process tagged instances 
 while True:
     motion = motion_sensor.sense_motion()
-    print("Value of motion:", motion,"\n")
+    
     #If motion is sensed, tag next available location
     if(motion):
         #Reading data one byte at a time from terminal with (G-mouse)
@@ -112,7 +107,6 @@ while True:
         while message.read_byte(byte) is False:
             byte = pty.read(1)
 
-        print("Creating buffer image\n")
         #New full message: image filename, time, longitude, and latitude
         with picamera.PiCamera() as camera:
             # start the camera early so it can adjust to lighting
@@ -127,10 +121,13 @@ while True:
                 image = stream.array
                 # save image
                 # print('Saving Image\n')
+                pic_str = str()
+                pic_str = 'image'+str(count)
                 count = count + 1
+                pic_str = pic_str + '.jpg'
                 
                 #Format: image<n>.jpg, where n is indexed from zero
-                cv2.imwrite(image_filename, image)
+                cv2.imwrite(pic_str, image)
 
                 #Other functions for image processing go here
                 #generate 1-D histogram
@@ -142,9 +139,6 @@ while True:
                 # pyplot.savefig('histogram.jpg')
                 
                 #Vulnerable to corruption if handler is called here
-                
-                # output_filename = image_filename + '['+ str(count) + '].jpg'
-
                 try:
                     file = open(output_filename, "a")
                 except FileNotFoundError:

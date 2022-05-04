@@ -58,22 +58,8 @@ def handler(SIGINT, handler):
 #Enables handler interrupt
 signal(SIGINT, handler)
 
-#Options for programmer
-#Output file format
-output_filename = 'location_log.csv'
-
-if os.path.exists(output_filename):
-    os.remove(output_filename)
-
-n = int(0)
-#filename[n], where n is the index of the image
-image_filename = 'buffer_image'
-
-while(os.path.exists(image_filename+'['+ str(n) + '].jpg')):
-    os.remove(image_filename+'['+ str(n) + '].jpg')
-    image_filename = image_filename + '['+ str(n) + '].jpg'
-    n = n + 1
-    print("Removing buffer image:", image_filename)
+    #Output file format
+    output_filename = 'location_log.csv'
 
 #Used to interface sensor
 motion_sensor = Sensor_class.Sensor()
@@ -83,36 +69,34 @@ motion_sensor.sensor_init()
 message = GPS_class.GPS()
 
 
+
+count = 0
 if len(sys.argv) < 2:
-    print("Usage: <prog_name> <pty terminal path>")
-    sys.exit()
+  print("Usage: <prog_name> <pty terminal path>")
+  sys.exit()
 
 try:
-    pty = open(sys.argv[1], "rb")   
+  pty = open(sys.argv[1], "rb")
 except FileNotFoundError:
-    msg = "Terminal: " + sys.argv[1] + " does not exist"
-    print(msg)
-    sys.exit()
+  msg = "Terminal: " + sys.argv[1] + " does not exist"
+  print(msg)
+  sys.exit()
 
 print(sys.argv[1])
-print("port with G-mouse successfully opened")
+print("port successfully opened")
 
-#keeps track of how many images get saved
-count = 0 
-
-#Sparce GPS messages, poll the motion sensor as often as possible given physical 
-#constraints, and process tagged instances 
+count = 0 #keeps track of how many images were saved
 while True:
     motion = motion_sensor.sense_motion()
-    print("Value of motion:", motion,"\n")
+    # time.sleep(2)
+    
     #If motion is sensed, tag next available location
     if(motion):
-        #Reading data one byte at a time from terminal with (G-mouse)
+        #Reading data one byte at a time from tty terminal (G-mouse)
         byte = pty.read(1)
         while message.read_byte(byte) is False:
             byte = pty.read(1)
 
-        print("Creating buffer image\n")
         #New full message: image filename, time, longitude, and latitude
         with picamera.PiCamera() as camera:
             # start the camera early so it can adjust to lighting
@@ -127,10 +111,13 @@ while True:
                 image = stream.array
                 # save image
                 # print('Saving Image\n')
+                pic_str = str()
+                pic_str = 'image'+str(count)
                 count = count + 1
+                pic_str = pic_str + '.jpg'
                 
                 #Format: image<n>.jpg, where n is indexed from zero
-                cv2.imwrite(image_filename, image)
+                cv2.imwrite(pic_str, image)
 
                 #Other functions for image processing go here
                 #generate 1-D histogram
@@ -142,24 +129,21 @@ while True:
                 # pyplot.savefig('histogram.jpg')
                 
                 #Vulnerable to corruption if handler is called here
-                
-                # output_filename = image_filename + '['+ str(count) + '].jpg'
-
                 try:
                     file = open(output_filename, "a")
                 except FileNotFoundError:
                     msg = "Terminal: " + output_filename + " does not exist"
                     print(msg)
                     sys.exit()
-                #Primarily comma delimited
                 file.write(pic_str)
                 file.write(message.get_tag())
-                #Secondary delimiter is newline
                 file.write("\n")
                 file.close()
 
-                # time.sleep(2)#
+                time.sleep(2)
 
-    # else no motion is detected, keep sensing
+    # else:
+    #     print('No motion detected\n')
+        # time.sleep(3)
 
 motion_sensor.sensor_shutdown()

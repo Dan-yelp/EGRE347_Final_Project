@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 from time import sleep
 import sys
+from signal import signal, SIGINT
 
 class Sensor:
     motion = False
@@ -22,7 +23,7 @@ class Sensor:
 
         self.motion = False
 
-        if not GPIO.input(self.gpio_input):
+        if(!GPIO.input(self.gpio_input)):
             # print('Event not detected\n')
             GPIO.output(self.red,GPIO.LOW)
             self.motion = False

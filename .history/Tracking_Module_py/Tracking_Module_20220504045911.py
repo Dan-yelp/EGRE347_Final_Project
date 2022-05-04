@@ -104,7 +104,7 @@ count = 0
 #constraints, and process tagged instances 
 while True:
     motion = motion_sensor.sense_motion()
-    print("Value of motion:", motion,"\n")
+    
     #If motion is sensed, tag next available location
     if(motion):
         #Reading data one byte at a time from terminal with (G-mouse)
@@ -112,7 +112,7 @@ while True:
         while message.read_byte(byte) is False:
             byte = pty.read(1)
 
-        print("Creating buffer image\n")
+        print("Creating buffer image:", image_filename)
         #New full message: image filename, time, longitude, and latitude
         with picamera.PiCamera() as camera:
             # start the camera early so it can adjust to lighting
