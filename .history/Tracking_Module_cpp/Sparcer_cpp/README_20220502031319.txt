@@ -1,5 +1,3 @@
-In order to utilize this module, you must install the raspicam library: https://github.com/cedricve/raspicam
-
 This program was written by Daniel J. Youngk, and Mehmet Kutlug.
 
 NMEA message data scarcing.
